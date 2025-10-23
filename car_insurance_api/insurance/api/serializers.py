@@ -5,7 +5,7 @@ from insurance.models import Owner, Car, InsurancePolicy, Claim
 class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
-        fields = ["id", "name", "email"]
+        fields = "__all__"
 
 
 class CarSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class CarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Car
-        fields = ["id", "vin", "make", "model", "yearOfManufacture", "owner"]
+        fields = "__all__"
 
 
 class InsurancePolicySerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class InsurancePolicySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InsurancePolicy
-        fields = ["id", "provider", "startDate", "endDate"]
+        fields = "__all__"
 
 
 class ClaimSerializer(serializers.ModelSerializer):
@@ -31,4 +31,4 @@ class ClaimSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Claim
-        fields = ["id", "claimDate", "description", "amount"]
+        exclude = ["car","claim_date"]

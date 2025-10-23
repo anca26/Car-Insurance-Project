@@ -26,6 +26,7 @@ urlpatterns = [
     # path("auth/", include("user.urls")),
 
     # # protected (JWT required)
-    # path("api/", include("insurance.urls")),
+    path("api/", include("insurance.api.urls")),
+    path("auth/", include("user.api.urls")),
     # path("api/", include("history.urls")),
 ]
