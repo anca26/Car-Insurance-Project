@@ -32,3 +32,8 @@ class ClaimSerializer(serializers.ModelSerializer):
     class Meta:
         model = Claim
         exclude = ["car","claim_date"]
+        
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Amount must be positive")
+        return value

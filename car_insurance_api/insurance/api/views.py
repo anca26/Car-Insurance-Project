@@ -29,15 +29,15 @@ class InsuranceValidityView(CarLookupMixin, APIView):
         car = self.get_car()
         date_str = request.query_params.get("date")
         if not date_str:
-            return Response({"detail": "Query param 'date' is required"}, status=status.HTTP_400_BAD_REQUEST400)
+            return Response({"detail": "Query param 'date' is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             check_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
-            return Response({"detail": "Date must be YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST400)
+            return Response({"detail": "Date must be YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not (1900 <= check_date.year <= 2100):
-            return Response({"detail": "Date out of range (1900–2100)"}, status=status.HTTP_400_BAD_REQUEST400)
+            return Response({"detail": "Date out of range (1900–2100)"}, status=status.HTTP_400_BAD_REQUEST)
 
         valid = InsurancePolicy.objects.filter(
             car=car,

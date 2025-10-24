@@ -1,0 +1,9 @@
+APScheduler==3.11.0
+asgiref==3.10.0
+Django==5.2.7
+djangorestframework==3.16.1
+psycopg2-binary==2.9.11
+sqlparse==0.5.3
+structlog==25.4.0
+tzdata==2025.2
+tzlocal==5.3.1
