@@ -7,6 +7,9 @@ from rest_framework.views import APIView
 from insurance.models import Car, InsurancePolicy, Claim
 from insurance.api.serializers import CarSerializer, InsurancePolicySerializer, ClaimSerializer
 
+import structlog
+log = structlog.get_logger()
+
 
 class CarListView(generics.ListAPIView):
     queryset = Car.objects.select_related("owner").all()
@@ -26,15 +29,15 @@ class InsuranceValidityView(CarLookupMixin, APIView):
         car = self.get_car()
         date_str = request.query_params.get("date")
         if not date_str:
-            return Response({"detail": "Query param 'date' is required"}, status=400)
+            return Response({"detail": "Query param 'date' is required"}, status=status.HTTP_400_BAD_REQUEST400)
 
         try:
             check_date = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
-            return Response({"detail": "Date must be YYYY-MM-DD"}, status=400)
+            return Response({"detail": "Date must be YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST400)
 
         if not (1900 <= check_date.year <= 2100):
-            return Response({"detail": "Date out of range (1900–2100)"}, status=400)
+            return Response({"detail": "Date out of range (1900–2100)"}, status=status.HTTP_400_BAD_REQUEST400)
 
         valid = InsurancePolicy.objects.filter(
             car=car,
@@ -55,6 +58,8 @@ class PolicyCreateView(CarLookupMixin, generics.CreateAPIView):
             raise ValidationError({"endDate": "endDate must be >= startDate"})
 
         serializer.save(car=self.get_car())
+        car = self.get_car()
+        log.info("Policy created", car_id=car.id)
 
 
 class ClaimCreateView(CarLookupMixin, generics.CreateAPIView):
@@ -66,6 +71,7 @@ class ClaimCreateView(CarLookupMixin, generics.CreateAPIView):
         car = self.get_car()
         claim_id = response.data.get("id")
         response["Location"] = f"/api/cars/{car.id}/claims/{claim_id}"
+        log.info("Claim created", car_id=car.id, claim_id=claim_id)
         return response
 
     def perform_create(self, serializer):

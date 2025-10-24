@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import logging
+import structlog
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +30,31 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#logging and structlog configuration
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_log_level,
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer() if not DEBUG else structlog.dev.ConsoleRenderer(),
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(logging.DEBUG if DEBUG else logging.INFO),
+    context_class=dict,
+    cache_logger_on_first_use=True,
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {  # route stdlib logging -> console; structlog uses stdlib under the hood
+        "handlers": ["console"],
+        "level": "DEBUG" if DEBUG else "INFO",
+    },
+}
 
 # Application definition
 
@@ -39,7 +67,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'core',
+    #'core',
+    'core.apps.CoreConfig',
     'insurance',
     'user',
     'history',
@@ -136,3 +165,6 @@ REST_FRAMEWORK = {
 #         'rest_framework.permissions.IsAuthenticated',
 #     ]
 }
+
+SCHEDULER_ENABLED = os.getenv("SCHEDULER_ENABLED", "1") == "1"
+SCHEDULER_INTERVAL_MINUTES = int(os.getenv("SCHEDULER_INTERVAL_MINUTES", "10"))

@@ -19,14 +19,9 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    
-    # # public (no auth)
-    # path("health/", include("core.urls")),
-    # path("auth/", include("user.urls")),
 
-    # # protected (JWT required)
     path("api/", include("insurance.api.urls")),
     path("auth/", include("user.api.urls")),
-    # path("api/", include("history.urls")),
+    path("health/", include("core.urls")),
+
 ]

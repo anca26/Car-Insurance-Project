@@ -23,7 +23,7 @@ class InsurancePolicySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InsurancePolicy
-        fields = "__all__"
+        exclude = ["car","start_date","end_date"]
 
 
 class ClaimSerializer(serializers.ModelSerializer):
